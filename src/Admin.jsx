@@ -5,7 +5,7 @@ const ADMIN_PASSWORD = 'a'
 
 const REPO_OWNER = 'Artyomgg'
 const REPO_NAME = 'ABLAKNEWS'
-const GITHUB_TOKEN = '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'
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN
 
 function Admin() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
