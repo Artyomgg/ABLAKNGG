@@ -15,7 +15,7 @@ export function App() {
 	const [loadingTracks, setLoadingTracks] = useState(true)
 	const audioRef = useRef(null)
 
-	// ========== ЗАГРУЗКА ФОТО С GITHUB ==========
+	// ========== ЗАГРУЗКА ФОТО ==========
 	useEffect(() => {
 		const loadPhotos = async () => {
 			try {
@@ -24,14 +24,29 @@ export function App() {
 				)
 				if (response.ok) {
 					const data = await response.json()
-					setPhotos(data)
+					if (data && data.length > 0) {
+						setPhotos(data)
+						console.log(data)
+					} else {
+						setPhotos([
+							'https://i.ibb.co/ваш-код/photo1.jpg',
+							'https://i.ibb.co/ваш-код/photo2.jpg',
+							'https://i.ibb.co/ваш-код/photo3.jpg',
+						])
+					}
 				} else {
-					console.log('Файл photos.json не найден, использую стандартные фото')
-					setPhotos(['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg'])
+					setPhotos([
+						'https://i.ibb.co/ваш-код/photo1.jpg',
+						'https://i.ibb.co/ваш-код/photo2.jpg',
+						'https://i.ibb.co/ваш-код/photo3.jpg',
+					])
 				}
 			} catch (error) {
-				console.error('Ошибка загрузки фото:', error)
-				setPhotos(['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg'])
+				setPhotos([
+					'https://i.ibb.co/ваш-код/photo1.jpg',
+					'https://i.ibb.co/ваш-код/photo2.jpg',
+					'https://i.ibb.co/ваш-код/photo3.jpg',
+				])
 			} finally {
 				setLoadingPhotos(false)
 			}
@@ -39,7 +54,7 @@ export function App() {
 		loadPhotos()
 	}, [])
 
-	// ========== ЗАГРУЗКА НОВОСТЕЙ С GITHUB ==========
+	// ========== НОВОСТИ ==========
 	useEffect(() => {
 		const loadNews = async () => {
 			try {
@@ -50,11 +65,9 @@ export function App() {
 					const data = await response.json()
 					setNews(data)
 				} else {
-					console.log('Файл новостей не найден')
 					setNews([])
 				}
 			} catch (error) {
-				console.error('Ошибка загрузки новостей:', error)
 				setNews([])
 			} finally {
 				setLoadingNews(false)
@@ -63,7 +76,7 @@ export function App() {
 		loadNews()
 	}, [])
 
-	// ========== ЗАГРУЗКА ТРЕКОВ С GITHUB ==========
+	// ========== ТРЕКИ ==========
 	useEffect(() => {
 		const loadTracks = async () => {
 			try {
@@ -74,11 +87,9 @@ export function App() {
 					const data = await response.json()
 					setTracks(data)
 				} else {
-					console.log('Файл tracks.json не найден')
 					setTracks([])
 				}
 			} catch (error) {
-				console.error('Ошибка загрузки треков:', error)
 				setTracks([])
 			} finally {
 				setLoadingTracks(false)
@@ -87,23 +98,29 @@ export function App() {
 		loadTracks()
 	}, [])
 
-	// ========== АВТОПЕРЕКЛЮЧЕНИЕ ФОТО ==========
+	// ========== АВТОПЕРЕКЛЮЧЕНИЕ (ЕСЛИ БОЛЬШЕ 1 ФОТО) ==========
 	useEffect(() => {
-		if (photos.length === 0) return
+		const currentPhotos = loadingPhotos ? [] : photos
+		if (currentPhotos.length <= 1) return
 		const interval = setInterval(() => {
-			setCurrentPhotoIndex(prev => (prev + 1) % photos.length)
+			setCurrentPhotoIndex(prev => (prev + 1) % currentPhotos.length)
 		}, 4000)
 		return () => clearInterval(interval)
-	}, [photos.length])
+	}, [photos, loadingPhotos])
+
+
+	console.log(photos)
 
 	const prevPhoto = () => {
-		if (photos.length === 0) return
-		setCurrentPhotoIndex(prev => (prev - 1 + photos.length) % photos.length)
+		const currentPhotos = loadingPhotos ? [] : photos
+		if (currentPhotos.length <= 1) return
+		setCurrentPhotoIndex(prev => (prev - 1 + currentPhotos.length) % currentPhotos.length)
 	}
 
 	const nextPhoto = () => {
-		if (photos.length === 0) return
-		setCurrentPhotoIndex(prev => (prev + 1) % photos.length)
+		const currentPhotos = loadingPhotos ? [] : photos
+		if (currentPhotos.length <= 1) return
+		setCurrentPhotoIndex(prev => (prev + 1) % currentPhotos.length)
 	}
 
 	// ========== ПЛЕЕР ==========
@@ -119,7 +136,6 @@ export function App() {
 	useEffect(() => {
 		const audio = audioRef.current
 		if (!audio) return
-
 		if (isPlaying) {
 			audio.play().catch(() => {})
 		} else {
@@ -130,15 +146,12 @@ export function App() {
 	useEffect(() => {
 		const audio = audioRef.current
 		if (!audio) return
-
 		const updateTime = () => {
 			setCurrentTime(audio.currentTime)
 			setDuration(audio.duration || 0)
 		}
-
 		audio.addEventListener('timeupdate', updateTime)
 		audio.addEventListener('loadedmetadata', updateTime)
-
 		return () => {
 			audio.removeEventListener('timeupdate', updateTime)
 			audio.removeEventListener('loadedmetadata', updateTime)
@@ -152,11 +165,7 @@ export function App() {
 		return `${mins}:${secs < 10 ? '0' : ''}${secs}`
 	}
 
-	// ========== ЗАГЛУШКИ ДЛЯ ЗАГРУЗКИ ==========
-	const displayPhotos =
-		loadingPhotos || photos.length === 0
-			? ['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg']
-			: photos
+	const displayPhotos = loadingPhotos || photos.length === 0 ? ['/images/default-news.jpg'] : photos
 
 	const displayTracks = loadingTracks ? [] : tracks
 
@@ -251,15 +260,12 @@ export function App() {
 						<span className='section-label'>Новости</span>
 						<h2>Последние обновления</h2>
 					</div>
-
 					{loadingNews && (
 						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Загрузка...</p>
 					)}
-
 					{!loadingNews && news.length === 0 && (
 						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Новостей пока нет</p>
 					)}
-
 					<div className='news-grid'>
 						{news.map(item => (
 							<div className='news-card' key={item.id}>
@@ -297,17 +303,14 @@ export function App() {
 						<span className='section-label'>Слушать</span>
 						<h2>Треки</h2>
 					</div>
-
 					{loadingTracks && (
 						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
 							Загрузка треков...
 						</p>
 					)}
-
 					{!loadingTracks && displayTracks.length === 0 && (
 						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Треков пока нет</p>
 					)}
-
 					<div className='tracks-list'>
 						{displayTracks.map(track => (
 							<div
