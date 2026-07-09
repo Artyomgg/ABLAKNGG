@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import { tracks } from './Data/TrackData'
 
 export function App() {
 	const [isPlaying, setIsPlaying] = useState(false)
@@ -8,12 +7,89 @@ export function App() {
 	const [currentTime, setCurrentTime] = useState(0)
 	const [duration, setDuration] = useState(0)
 	const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
+	const [photos, setPhotos] = useState([])
+	const [news, setNews] = useState([])
+	const [tracks, setTracks] = useState([])
+	const [loadingNews, setLoadingNews] = useState(true)
+	const [loadingPhotos, setLoadingPhotos] = useState(true)
+	const [loadingTracks, setLoadingTracks] = useState(true)
 	const audioRef = useRef(null)
 
-	const photos = ['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg']
-
-	// автопереключение фото
+	// ========== ЗАГРУЗКА ФОТО С GITHUB ==========
 	useEffect(() => {
+		const loadPhotos = async () => {
+			try {
+				const response = await fetch(
+					'https://raw.githubusercontent.com/Artyomgg/ABLAKNEWS/main/photos.json',
+				)
+				if (response.ok) {
+					const data = await response.json()
+					setPhotos(data)
+				} else {
+					console.log('Файл photos.json не найден, использую стандартные фото')
+					setPhotos(['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg'])
+				}
+			} catch (error) {
+				console.error('Ошибка загрузки фото:', error)
+				setPhotos(['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg'])
+			} finally {
+				setLoadingPhotos(false)
+			}
+		}
+		loadPhotos()
+	}, [])
+
+	// ========== ЗАГРУЗКА НОВОСТЕЙ С GITHUB ==========
+	useEffect(() => {
+		const loadNews = async () => {
+			try {
+				const response = await fetch(
+					'https://raw.githubusercontent.com/Artyomgg/ABLAKNEWS/main/news.json',
+				)
+				if (response.ok) {
+					const data = await response.json()
+					setNews(data)
+				} else {
+					console.log('Файл новостей не найден')
+					setNews([])
+				}
+			} catch (error) {
+				console.error('Ошибка загрузки новостей:', error)
+				setNews([])
+			} finally {
+				setLoadingNews(false)
+			}
+		}
+		loadNews()
+	}, [])
+
+	// ========== ЗАГРУЗКА ТРЕКОВ С GITHUB ==========
+	useEffect(() => {
+		const loadTracks = async () => {
+			try {
+				const response = await fetch(
+					'https://raw.githubusercontent.com/Artyomgg/ABLAKNEWS/main/tracks.json',
+				)
+				if (response.ok) {
+					const data = await response.json()
+					setTracks(data)
+				} else {
+					console.log('Файл tracks.json не найден')
+					setTracks([])
+				}
+			} catch (error) {
+				console.error('Ошибка загрузки треков:', error)
+				setTracks([])
+			} finally {
+				setLoadingTracks(false)
+			}
+		}
+		loadTracks()
+	}, [])
+
+	// ========== АВТОПЕРЕКЛЮЧЕНИЕ ФОТО ==========
+	useEffect(() => {
+		if (photos.length === 0) return
 		const interval = setInterval(() => {
 			setCurrentPhotoIndex(prev => (prev + 1) % photos.length)
 		}, 4000)
@@ -21,13 +97,16 @@ export function App() {
 	}, [photos.length])
 
 	const prevPhoto = () => {
+		if (photos.length === 0) return
 		setCurrentPhotoIndex(prev => (prev - 1 + photos.length) % photos.length)
 	}
 
 	const nextPhoto = () => {
+		if (photos.length === 0) return
 		setCurrentPhotoIndex(prev => (prev + 1) % photos.length)
 	}
 
+	// ========== ПЛЕЕР ==========
 	const playTrack = track => {
 		if (currentTrack?.id === track.id) {
 			setIsPlaying(!isPlaying)
@@ -73,6 +152,14 @@ export function App() {
 		return `${mins}:${secs < 10 ? '0' : ''}${secs}`
 	}
 
+	// ========== ЗАГЛУШКИ ДЛЯ ЗАГРУЗКИ ==========
+	const displayPhotos =
+		loadingPhotos || photos.length === 0
+			? ['/images/artist-1.jpg', '/images/artist-2.jpg', '/images/artist-3.jpg']
+			: photos
+
+	const displayTracks = loadingTracks ? [] : tracks
+
 	return (
 		<div className='app'>
 			<audio ref={audioRef} src={currentTrack?.audio} />
@@ -102,7 +189,6 @@ export function App() {
 				</div>
 			</section>
 
-
 			{/* ABOUT */}
 			<section className='about' id='about'>
 				<div className='container'>
@@ -125,24 +211,81 @@ export function App() {
 						</div>
 						<div className='about-image'>
 							<div className='carousel'>
-								<img src={photos[currentPhotoIndex]} alt='ABLAK NGG' className='carousel-image' />
-								<button className='carousel-btn prev' onClick={prevPhoto}>
-									‹
-								</button>
-								<button className='carousel-btn next' onClick={nextPhoto}>
-									›
-								</button>
-								<div className='carousel-dots'>
-									{photos.map((_, index) => (
-										<span
-											key={index}
-											className={`dot ${index === currentPhotoIndex ? 'active' : ''}`}
-											onClick={() => setCurrentPhotoIndex(index)}
-										/>
-									))}
-								</div>
+								<img
+									src={displayPhotos[currentPhotoIndex % displayPhotos.length]}
+									alt='ABLAK NGG'
+									className='carousel-image'
+									onError={e => {
+										e.target.src = '/images/default-news.jpg'
+									}}
+								/>
+								{displayPhotos.length > 1 && (
+									<>
+										<button className='carousel-btn prev' onClick={prevPhoto}>
+											‹
+										</button>
+										<button className='carousel-btn next' onClick={nextPhoto}>
+											›
+										</button>
+										<div className='carousel-dots'>
+											{displayPhotos.map((_, index) => (
+												<span
+													key={index}
+													className={`dot ${index === currentPhotoIndex % displayPhotos.length ? 'active' : ''}`}
+													onClick={() => setCurrentPhotoIndex(index)}
+												/>
+											))}
+										</div>
+									</>
+								)}
 							</div>
 						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* NEWS */}
+			<section className='news' id='news'>
+				<div className='container'>
+					<div className='section-header'>
+						<span className='section-label'>Новости</span>
+						<h2>Последние обновления</h2>
+					</div>
+
+					{loadingNews && (
+						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Загрузка...</p>
+					)}
+
+					{!loadingNews && news.length === 0 && (
+						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Новостей пока нет</p>
+					)}
+
+					<div className='news-grid'>
+						{news.map(item => (
+							<div className='news-card' key={item.id}>
+								{item.image && (
+									<div className='news-image'>
+										<img
+											src={item.image}
+											alt={item.title}
+											onError={e => {
+												e.target.style.display = 'none'
+											}}
+										/>
+									</div>
+								)}
+								<div className='news-content'>
+									<span className='news-date'>{item.date}</span>
+									<h3>{item.title}</h3>
+									<p>{item.description}</p>
+									{item.link && (
+										<a href={item.link} className='news-link'>
+											Подробнее →
+										</a>
+									)}
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
 			</section>
@@ -154,19 +297,30 @@ export function App() {
 						<span className='section-label'>Слушать</span>
 						<h2>Треки</h2>
 					</div>
+
+					{loadingTracks && (
+						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+							Загрузка треков...
+						</p>
+					)}
+
+					{!loadingTracks && displayTracks.length === 0 && (
+						<p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Треков пока нет</p>
+					)}
+
 					<div className='tracks-list'>
-						{tracks.map(track => (
+						{displayTracks.map(track => (
 							<div
 								key={track.id}
 								className={`track-item ${currentTrack?.id === track.id ? 'active' : ''}`}
 								onClick={() => playTrack(track)}
 							>
 								<div className='track-cover-small'>
-									<img src={track.cover} alt={track.title} />
+									<img src={track.cover || '/images/default-cover.jpg'} alt={track.title} />
 								</div>
 								<div className='track-info'>
 									<h4>{track.title}</h4>
-									<p>{track.duration}</p>
+									<p>{track.duration || '0:00'}</p>
 								</div>
 								<button className='play-btn-small'>
 									{currentTrack?.id === track.id && isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -181,7 +335,11 @@ export function App() {
 			{currentTrack && (
 				<div className='player'>
 					<div className='player-info'>
-						<img src={currentTrack.cover} alt={currentTrack.title} className='player-cover' />
+						<img
+							src={currentTrack.cover || '/images/default-cover.jpg'}
+							alt={currentTrack.title}
+							className='player-cover'
+						/>
 						<div>
 							<h4>{currentTrack.title}</h4>
 							<p>ABLAK NGG</p>
