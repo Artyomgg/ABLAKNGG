@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './Admin.css'
 
-const ADMIN_PASSWORD = 'a'
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD
 
 const REPO_OWNER = 'Artyomgg'
 const REPO_NAME = 'ABLAKNEWS'

@@ -26,7 +26,6 @@ export function App() {
 					const data = await response.json()
 					if (data && data.length > 0) {
 						setPhotos(data)
-						console.log(data)
 					} else {
 						setPhotos([
 							'https://i.ibb.co/ваш-код/photo1.jpg',
@@ -107,9 +106,6 @@ export function App() {
 		}, 4000)
 		return () => clearInterval(interval)
 	}, [photos, loadingPhotos])
-
-
-	console.log(photos)
 
 	const prevPhoto = () => {
 		const currentPhotos = loadingPhotos ? [] : photos
@@ -366,48 +362,69 @@ export function App() {
 				</div>
 			)}
 
-			{/* CONTACT */}
-			<section className='contact' id='contact'>
+			{/* ========== ПЛАТФОРМЫ ========== */}
+			<section className='platforms' id='platforms'>
 				<div className='container'>
 					<div className='section-header'>
-						<span className='section-label'>Связаться</span>
-						<h2>Напиши мне</h2>
+						<span className='section-label'>Слушать</span>
+						<h2>На всех площадках</h2>
 					</div>
-					<div className='contact-grid'>
-						<div className='contact-info'>
-							<p>
-								📧 <a href='mailto:ablak.ngg@mail.ru'>ablak.ngg@mail.ru</a>
-							</p>
-							<p>
-								📱{' '}
-								<a href='https://t.me/your_telegram' target='_blank'>
-									Telegram
-								</a>
-							</p>
-							<p>
-								📱{' '}
-								<a href='https://instagram.com/your_instagram' target='_blank'>
-									Instagram
-								</a>
-							</p>
-							<p>
-								📱{' '}
-								<a href='https://vk.com/your_vk' target='_blank'>
-									VK
-								</a>
-							</p>
-							<div className='contact-cta'>
-								<p>Напиши мне — я отвечу, когда будет настроение</p>
-							</div>
-						</div>
-						<form className='contact-form'>
-							<input type='text' placeholder='Имя' />
-							<input type='email' placeholder='Email' />
-							<textarea placeholder='Сообщение' rows='5'></textarea>
-							<button type='submit' className='btn-primary'>
-								Отправить
-							</button>
-						</form>
+					<div className='platforms-grid'>
+						<a
+							href='https://music.yandex.ru/artist/26112787'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='platform-card yandex'
+						>
+							<span className='platform-icon'>
+								<img src='\images\free-png.ru-4.png' />
+							</span>
+							Яндекс Музыка
+						</a>
+						<a
+							href='https://vk.com/artist/ablakngg'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='platform-card vk'
+						>
+							<span className='platform-icon'>
+								<img src='/images/vk-music-sign-logo.png' />
+							</span>
+							VK Музыка
+						</a>
+						<a
+							href='https://open.spotify.com/artist/2SihUYVx4bbB8IWtQove5h?si=-JLn8CYiSTenimK6Dhq-0Q'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='platform-card spotify'
+						>
+							<span className='platform-icon'>
+								<img src='/images/free-icon-spotify-174872.png' />
+							</span>
+							Spotify
+						</a>
+						<a
+							href='https://vk.com/club240152901'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='platform-card apple'
+						>
+							<span className='platform-icon'>
+								<img src='/images/free-icon-vk-5968835.png' />
+							</span>
+							Сообщество в ВК
+						</a>
+						<a
+							href='https://t.me/ваш-канал'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='platform-card telegram'
+						>
+							<span className='platform-icon'>
+								<img src='/images/Telegram_2019_Logo.svg.webp' />
+							</span>
+							Telegram
+						</a>
 					</div>
 				</div>
 			</section>
@@ -424,7 +441,7 @@ export function App() {
 						<div className='footer-links'>
 							<a href='#about'>Об исполнителе</a>
 							<a href='#tracks'>Треки</a>
-							<a href='#contact'>Связаться</a>
+							<a href='#platforms'>Площадки</a>
 						</div>
 						<div className='footer-socials'>
 							<a href='#' target='_blank'>

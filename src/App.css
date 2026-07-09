@@ -93,7 +93,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	background: url('/images/ABLAK\ NGG\ \(4\).png') center/cover no-repeat;
+	background: url('/images/ABLAK\ NGG\ \(6\).png') center/cover no-repeat;
 }
 
 .hero-overlay {
@@ -823,4 +823,125 @@ body {
 		font-size: 0.9rem;
 		padding: 8px 16px;
 	}
+}
+
+/* ========== ПЛАТФОРМЫ ========== */
+.platforms {
+	padding: 80px 0;
+	background: var(--bg);
+}
+
+.platforms-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 16px;
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+.platform-card {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 16px 20px;
+	border-radius: 12px;
+	color: white;
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 0.95rem;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	transition: all 0.3s ease;
+	background: var(--card);
+}
+
+.platform-card:hover {
+	transform: translateY(-4px);
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.platform-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.08);
+	font-weight: 800;
+	font-size: 0.85rem;
+	flex-shrink: 0;
+}
+
+/* Цвета при наведении */
+.platform-card.yandex:hover {
+	background: rgba(255, 204, 0, 0.12);
+	border-color: #ffcc00;
+}
+.platform-card.yandex .platform-icon {
+	color: #ffcc00;
+}
+
+.platform-card.vk:hover {
+	background: rgba(0, 119, 255, 0.12);
+	border-color: #0077ff;
+}
+.platform-card.vk .platform-icon {
+	color: #0077ff;
+}
+
+.platform-card.spotify:hover {
+	background: rgba(29, 185, 84, 0.12);
+	border-color: #1db954;
+}
+.platform-card.spotify .platform-icon {
+	color: #1db954;
+}
+
+.platform-card.apple:hover {
+	background: rgba(255, 255, 255, 0.06);
+	border-color: #ffffff;
+}
+.platform-card.apple .platform-icon {
+	color: #ffffff;
+}
+
+.platform-card.telegram:hover {
+	background: rgba(0, 136, 204, 0.12);
+	border-color: #0088cc;
+}
+.platform-card.telegram .platform-icon {
+	color: #0088cc;
+}
+
+@media (max-width: 768px) {
+	.platforms-grid {
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+		max-width: 400px;
+	}
+
+	.platform-card {
+		font-size: 0.85rem;
+		padding: 12px 16px;
+	}
+
+	.platform-icon {
+		width: 28px;
+		height: 28px;
+		font-size: 0.75rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.platforms-grid {
+		grid-template-columns: 1fr;
+		max-width: 280px;
+	}
+}
+
+
+.platform-icon img{
+	width: 100%;
 }
